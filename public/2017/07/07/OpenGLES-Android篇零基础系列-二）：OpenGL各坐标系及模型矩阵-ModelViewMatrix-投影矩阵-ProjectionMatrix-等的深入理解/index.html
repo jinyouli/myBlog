@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+
+    
+
+    
+    <title>OpenGLES Android篇零基础系列(二）：OpenGL各坐标系及模型矩阵(ModelViewMatrix),投影矩阵(ProjectionMatrix)等的深入理解  | jinyou blog</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="">
+    
+    <meta name="description" content="上一篇我们粗略的介绍了下GLES20 中 GLSurfaceView以及Render接口的使用。 对于三角形">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenGLES Android篇零基础系列(二）：OpenGL各坐标系及模型矩阵(ModelViewMatrix),投影矩阵(ProjectionMatrix)等的深入理解 ">
+<meta property="og:url" content="http://yoursite.com/2017/07/07/OpenGLES-Android篇零基础系列-二）：OpenGL各坐标系及模型矩阵-ModelViewMatrix-投影矩阵-ProjectionMatrix-等的深入理解/index.html">
+<meta property="og:site_name" content="jinyou blog">
+<meta property="og:description" content="上一篇我们粗略的介绍了下GLES20 中 GLSurfaceView以及Render接口的使用。 对于三角形">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/977602-19b4d34a5143fbf8?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-12-15T02:41:51.535Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenGLES Android篇零基础系列(二）：OpenGL各坐标系及模型矩阵(ModelViewMatrix),投影矩阵(ProjectionMatrix)等的深入理解 ">
+<meta name="twitter:description" content="上一篇我们粗略的介绍了下GLES20 中 GLSurfaceView以及Render接口的使用。 对于三角形">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/977602-19b4d34a5143fbf8?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+    
+
+    
+        <link rel="alternate" href="/" title="jinyou blog" type="application/atom+xml">
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/titillium-web/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+
+
+</head>
+</html>
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item">
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                        
+                                    
+                                <li class="main-nav-list-item">
+                                    <a class="main-nav-list-link" href="/about/index.html">关于</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索">
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么...">
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    未分类
+    </h1>
+</div>
+
+                        <div class="main-body-content">
+                            <article id="post-OpenGLES-Android篇零基础系列-二）：OpenGL各坐标系及模型矩阵-ModelViewMatrix-投影矩阵-ProjectionMatrix-等的深入理解" class="article article-single article-type-post" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        OpenGLES Android篇零基础系列(二）：OpenGL各坐标系及模型矩阵(ModelViewMatrix),投影矩阵(ProjectionMatrix)等的深入理解 
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/07/07/OpenGLES-Android篇零基础系列-二）：OpenGL各坐标系及模型矩阵-ModelViewMatrix-投影矩阵-ProjectionMatrix-等的深入理解/" class="article-date">
+            <time datetime="2017-07-07T09:57:38.000Z" itemprop="datePublished">2017-07-07</time>
+        </a>
+    </div>
+
+		
+
+                
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p><strong>上一篇我们粗略的介绍了下GLES20 中 GLSurfaceView以及Render接口的使用。</strong> 对于三角形<a id="more"></a>顶点坐标的定义并没有做出注释，其实在官方的ApiDemo中，它也是赤裸裸的，一个注释都没有，且代码写得一点都不敢恭维，不知道那位同行现在是不是还在google里面。下面贴出一小段官方的ApiDemo中的代码，一起鉴赏鉴赏：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private static final int FLOAT_SIZE_BYTES = 4; </span><br><span class="line">private static final int TRIANGLE_VERTICES_DATA_STRIDE_BYTES = 5 * FLOAT_SIZE_BYTES; private static final int TRIANGLE_VERTICES_DATA_POS_OFFSET = 0; </span><br><span class="line">private static final int TRIANGLE_VERTICES_DATA_UV_OFFSET = 3; </span><br><span class="line">private final float[] mTriangleVerticesData = &#123; // X, Y, Z, U, V -1.0f, -0.5f, 0, 0.0f, 0.5f, 1.0f, -0.5f, 0, 1.0f, 0.5f, 0.0f, 1.0f, 0, 0.0f, 1.0f &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>如上，你们能看懂吗？在定义三角形顶点坐标数据时，仅仅只是简单粗暴的注释X,Y,Z,U,V,其中X,Y,Z好理解，可这U,V又是什么呢？X,Y,Z,U,V它们之间又有什么联系呢？<br>如果仅仅只是想从ApiDemo里面去研究，去搞懂它们是什么，怎么用，那估计不是一天两天的事，还得从浩瀚的网络中去查找。<br>正文：坐标系<br>OpenGL有6种坐标系，分别如下：<br>1，物体或模型坐标系(Object or model coordinates);<br>2，世界坐标系（World coordinates）<br>3，眼坐标或相机坐标（Eye (or Camera) coordinates)<br>4，裁剪坐标系（Clip coordinates）<br>5，标准设备坐标系（Normalized device coordinates）<br>6，屏幕坐标系（Window (or screen) coordinates）除了上面6种外，OpenGL还存在一种假想坐标系<strong>纹理坐标系</strong>，这个坐标系是不存在的，它其实是一系列<strong>变换矩阵</strong>的结果，比如它能使顶点从<strong>物体或模型坐标系</strong>变换到<strong>世界坐标系</strong>。</p>
+<p>从object coordainates到world coordinates再到camera coordinate的变换，在OpenGL中统一称为model-view转换，初始化的时候，object coordinates和world coordinates还有camera coordinates坐标重合在原点，变换矩阵都为Identity,所以在OpenGL中用glLoadIdentity()初始化变换矩阵栈。model-view matix转换points,vectorsd到camera坐标系。<br>OpenGL 的重要功能之一就是将三维的世界坐标经过变换、投影<br>等计算，最终算出它在显示设备上对应的位置，这个位置就称为设备坐标。在屏幕、打印机等设备上的坐标是二维坐标。值得一提的是，OpenGL可以只使用设备的一部分进行绘制，这个部分称为视区或视口(viewport)。投影得到的是视区内的坐标(投影坐标)，从投影坐标到设备坐标的计算过程就是设备变换了。<br>我们在OpenGL ES中常用到的几种坐标系：世界坐标系、物体坐标系、设备坐标系、眼坐标系<br>当然还有假想的纹理坐标系</p>
+<p>一、屏幕坐标系<br>对于移动设备来说，我们都知道，左上角为坐标原点，向右为X轴，向下为Y轴。如下图（图画的丑了点，先忍忍啊^_^）：<img src="http://upload-images.jianshu.io/upload_images/977602-19b4d34a5143fbf8?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述"><br>二、世界坐标系<br>这个世界坐标系是针对OpenGL来说明的。即三维坐标系X,Y,Z.它有一个漂亮的学名：右手笛卡尔坐标系统<br>,这个坐标系常用来描述物体及光源的位置。在移动设备中，屏幕中心为坐标三点，水平向右为X轴，在原点垂直X轴向上为Y轴，在原点垂直X,Y轴指向屏幕外为Z轴（正面对手机屏幕，直戳你眼睛的就是Z轴），同样如下图：<img src="http://upload-images.jianshu.io/upload_images/977602-5451d50f1999c5b2?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述"><br>将物体放到场景中也就是将物体平移到特定位置、旋转一定角度，这些操作就是坐标变换。OpenGL中提供了glTranslate<em>/glRotate</em>/glScale*三条坐标变换命令，利用OpenGL的矩阵运算命令，则可以实现任意复杂的坐标变换。在这里还要提一个重要的概念：<strong>坐标变换矩阵栈（ModelView)</strong><br>坐标变换矩阵栈<br>用来存储一系列的变换矩阵，栈顶就是当前坐标的变换矩阵，进入OpenGL管道的每个坐标(齐次坐标)都会先乘上这个矩阵，结果才是对应点在场景中的世界坐标。OpenGL中的坐标变换都是通过矩阵运算完成的。如图：<img src="http://upload-images.jianshu.io/upload_images/977602-2629f93e80f9f4a1?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述">ModelViewMatrix:模型矩阵ProjectionMatrix:投影矩阵<br>三、纹理坐标系<br>通过上一节，我们知道，纹理是图片，视频等的一种渲染方式，图片只有通过纹理才能加载到GLES中。因此纹理坐标系是指图片，视频等在手机屏幕上的坐标系，即U,V也有叫ST。该坐标系是一种假想坐标系，并不真正存在的，只是变换矩阵的结果。下面就统一叫UV坐标系。当应用初始化时，UV坐标系与三维坐标系（世界坐标系）重合。我们要注意的是，在OpenGL绘制过程中，它是可以选择绘制模式的，比如：点，线，面，且都是坐标集合里面进行顺序绘制的。i.e.:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private final float[] mTriangleVerticesData = &#123; // X, Y, Z, -1.0f, -0.5f, 0, //1 1.0f, -0.5f, 0, //2 0.0f, 1.0f, 0, //3 &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>当我们以纹理的形式加载一个图片到OpenGL中时，如何让它显示在世界坐标系中呢？这时就用到了纹理贴图的方式（即根据在世界坐标系中绘制顶点的先后顺序，把UV坐标系中的坐标与其一一对应），画图更加直接（<a href="http://blog.csdn.net/u011153817/article/details/%E5%AF%B9AndroidopenglES%E4%B8%96%E7%95%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E5%92%8C%E7%BA%B9%E7%90%86%E5%9D%90%E6%A0%87%E7%B3%BB%E7%9A%84%E7%90%86%E8%A7%A3" target="_blank" rel="noopener">从网上copy的图，在此感谢</a>）:<br><img src="http://upload-images.jianshu.io/upload_images/977602-79b16ee6cf6562cb?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br><img src="http://upload-images.jianshu.io/upload_images/977602-bda39e6d15b9db95?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="倒立的图片"><br>四、物体坐标系<br>物体坐标系是以物体的某一个点为原点来建立的三维坐标系（世界坐标系）。仅针对该物体。物体放到场景中时，各部分经历的坐标变换矩阵相同，相对位置不变，所以可视为一个整体<br>五、眼坐标系或相机坐标系<br>以视点为原点，以<strong>视线的方向</strong>为Z+轴正方向的坐标系中的方向。OpenGL管道会将<strong>世界坐标</strong>先变换到<strong>眼坐标</strong>，然后进行<strong>裁剪</strong>，只有在视线范围(视见体)之内的场景才会进入下一阶段的计算。<br>六、裁剪坐标系<br>由眼坐标可知，OpenGL管道首先会将目标从世界坐标变换到眼坐标，然后对视线范围外的部分进行裁剪。裁剪过程中用到投影变换矩阵栈(ProjectionMatrix)，栈顶矩阵就是当前投影变换矩阵，负责将场景各坐标变换到眼坐标，由所得到的结果是裁剪后的场景部分，称为裁剪坐标<br>我们上面说到了ModelViewMatrix 与ProjectionMatrix两个矩阵栈，那矩阵栈是怎么切换的呢？用函数：<strong>glMatrixMode(GL_MODELVIEWING或GL_PROJECTION)</strong>;本命令执行后参数所指矩阵栈就成为当前矩阵栈，以后的矩阵栈操纵命令将作用于它。紧接着glMatrixMode()就是初始化矩阵，我们在上面也讲到，所有矩阵都为Identity,所以用方法<strong>glLoadIdentity()</strong>初始化矩阵。<br><a href="http://blog.csdn.net/u011153817/article/details/51891759" target="_blank" rel="noopener">上一节</a><br>参考资料<br><a href="http://my.oschina.net/firemiles/blog/376382" target="_blank" rel="noopener">OpenGL坐标系介绍</a> <a href="http://blog.csdn.net/meegomeego/article/details/8686816" target="_blank" rel="noopener">OpenGL中各种坐标系的理解</a> <a href="http://blog.csdn.net/qq_31726827/article/details/51456498" target="_blank" rel="noopener">Android OpenGL20 世界坐标系,屏幕坐标系,纹理坐标系</a> <a href="http://blog.csdn.net/qq_31726827/article/details/51265186" target="_blank" rel="noopener">Android OpenGL 坐标系</a> <a href="http://blog.csdn.net/blues1021/article/details/51329885" target="_blank" rel="noopener"> 详解OpenGL的坐标系、投影和几何变换-矩阵压栈思想/矩阵列式存储</a> <a href="http://blog.csdn.net/lyx2007825/article/details/8792475" target="_blank" rel="noopener">OpenGL 矩阵变换（讲的太好了~！）</a></p>
+<p>原文地址：<a href="http://blog.csdn.net/u011153817/article/details/51899091" target="_blank" rel="noopener">http://blog.csdn.net/u011153817/article/details/51899091</a></p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="http://yoursite.com/2017/07/07/OpenGLES-Android篇零基础系列-二）：OpenGL各坐标系及模型矩阵-ModelViewMatrix-投影矩阵-ProjectionMatrix-等的深入理解/" data-id="cjrilcydt000vckuuk3li2fs9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "author": {
+            "@type": "Person",
+            "name": "jinyou"
+        },
+        "headline": "OpenGLES Android篇零基础系列(二）：OpenGL各坐标系及模型矩阵(ModelViewMatrix),投影矩阵(ProjectionMatrix)等的深入理解 ",
+        "image": "http://yoursite.comhttp://upload-images.jianshu.io/upload_images/977602-19b4d34a5143fbf8?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240",
+        "keywords": "",
+        "genre": "",
+        "datePublished": "2017-07-07",
+        "dateCreated": "2017-07-07",
+        "dateModified": "2017-12-15",
+        "url": "http://yoursite.com/2017/07/07/OpenGLES-Android篇零基础系列-二）：OpenGL各坐标系及模型矩阵-ModelViewMatrix-投影矩阵-ProjectionMatrix-等的深入理解/",
+        "description": "上一篇我们粗略的介绍了下GLES20 中 GLSurfaceView以及Render接口的使用。 对于三角形"
+        "wordCount": 173
+    }
+</script>
+
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+
+    
+    </section>
+
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="twitter" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-twitter"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="facebook" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-facebook"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="google-plus" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-google-plus"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/ppoffice/hexo-theme-hueman" target="_blank" rel="noopener">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank" rel="noopener">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/07/10/你在哪个瞬间最孤独？/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">下一篇</strong>
+        <p class="article-nav-title">
+        
+            你在哪个瞬间最孤独？
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2017/07/07/程序媛看过来/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">上一篇</strong>
+        <p class="article-nav-title">程序媛看过来~</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/12/13/无论是第一批90后还是年轻人-为何都感叹自己老了/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/11.jpg)" alt="无论是第一批90后还是年轻人 为何都感叹自己老了" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/12/13/无论是第一批90后还是年轻人-为何都感叹自己老了/" class="title">无论是第一批90后还是年轻人 为何都感叹自己老了</a></p>
+                            <p class="item-date"><time datetime="2017-12-13T02:51:35.000Z" itemprop="datePublished">2017-12-13</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/12/07/最好用的开源Web漏扫工具梳理/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/1.png)" alt="最好用的开源Web漏扫工具梳理" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/12/07/最好用的开源Web漏扫工具梳理/" class="title">最好用的开源Web漏扫工具梳理</a></p>
+                            <p class="item-date"><time datetime="2017-12-07T08:42:29.000Z" itemprop="datePublished">2017-12-07</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/12/07/7800元在美国官网购买256G-iPhone-X的经历/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://sinastorage.com/storage.miaosha.sina.com.cn/products/201712/bfc9c73436bc8d440c6e66e9eb65f660.png)" alt="7800元在美国官网购买256G iPhone X的经历" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/12/07/7800元在美国官网购买256G-iPhone-X的经历/" class="title">7800元在美国官网购买256G iPhone X的经历</a></p>
+                            <p class="item-date"><time datetime="2017-12-07T02:24:11.000Z" itemprop="datePublished">2017-12-07</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/11/24/iOS中最值得设计师学习的33个APP图标/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://img.mp.itc.cn/upload/20170509/737a9c5efafb45498f4be2386042fc64_th.jpg)" alt="iOS中最值得设计师学习的33个APP图标" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/11/24/iOS中最值得设计师学习的33个APP图标/" class="title">iOS中最值得设计师学习的33个APP图标</a></p>
+                            <p class="item-date"><time datetime="2017-11-24T07:47:02.000Z" itemprop="datePublished">2017-11-24</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/11/16/“高考零分生”的中场战事/" class="thumbnail">
+    
+    
+        <span style="background-image:url(http://upload-images.jianshu.io/upload_images/977602-84781c20619e7fbf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)" alt="“高考零分生”的中场战事" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/11/16/“高考零分生”的中场战事/" class="title">“高考零分生”的中场战事</a></p>
+                            <p class="item-date"><time datetime="2017-11-16T02:42:11.000Z" itemprop="datePublished">2017-11-16</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Markdown指南/">Markdown指南</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS逆向工程/">iOS逆向工程</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/搬瓦工/">搬瓦工</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Markdown指南/" style="font-size: 10px;">Markdown指南</a> <a href="/tags/iOS逆向工程/" style="font-size: 20px;">iOS逆向工程</a> <a href="/tags/搬瓦工/" style="font-size: 10px;">搬瓦工</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <p>&copy; 2019 jinyou</p>
+            </div>
+            <div class="footer-plugins">
+              
+    
+
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+        
+    
+    <script>
+    var disqus_shortname = 'hexo-theme-hueman';
+    
+    
+    var disqus_url = 'http://yoursite.com/2017/07/07/OpenGLES-Android篇零基础系列-二）：OpenGL各坐标系及模型矩阵-ModelViewMatrix-投影矩阵-ProjectionMatrix-等的深入理解/';
+    
+    (function() {
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
